@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-  <title>Flipbook BMD — Full Version</title>
+  <title>Flipbook Al Qur'an </title>
 
   <!--
     Catatan: file ini sengaja verbose (banyak komentar & struktur) agar mudah dibaca.
-    Total halaman diatur oleh TOTAL_PAGES (default 173).
+    Total halaman diatur oleh TOTAL_PAGES (default 1100).
     Pastikan:
       - images/page1.jpg ... images/page173.jpg tersedia
       - sounds/flip.mp3 tersedia
@@ -214,10 +214,10 @@
   <!-- App -->
   <div class="wrap" id="app" style="display:none;">
     <header>
-      <h1>Laporan Rekonsiliasi BMD Tahun 2023</h1>
+      <h1>AlQur'an</h1>
       <div style="display:flex;gap:10px;align-items:center">
         <button id="fullscreenToggle" class="btn secondary">Toggle Fullscreen</button>
-        <div id="pageInfo" class="info">Halaman 1 / 173</div>
+        <div id="pageInfo" class="info">Halaman 1 / 1100</div>
       </div>
     </header>
 
@@ -232,7 +232,7 @@
 
       <div class="goto">
         <label style="color:var(--muted)">Ke halaman</label>
-        <input id="gotoInput" type="number" min="1" max="173" value="1">
+        <input id="gotoInput" type="number" min="1" max="1100" value="1">
         <button id="gotoBtn" class="btn">Go</button>
       </div>
     </div>
@@ -254,7 +254,7 @@
     /* =========================
        CONFIG & STATE
        ========================= */
-    const TOTAL_PAGES = 173;     // sesuaikan kalau berubah
+    const TOTAL_PAGES = 1100;     // sesuaikan kalau berubah
     const PER_BLOCK = 10;        // pagination per block
     const A4_ASPECT = 1.41421356; // tinggi/lebar ≈ 297/210
     const MAX_BOOK_WIDTH = 1200; // maksimal lebar book (adjustable)
