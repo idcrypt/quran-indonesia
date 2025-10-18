@@ -24,6 +24,16 @@
       --accent: #007bff;
       --muted: #ddd;
       --radius: 8px;
+      --text: #fff;
+    }
+
+    /* Light theme variables (toggleable) */
+    [data-theme="light"]{
+      --bg: #f6f6f6;
+      --book-bg: #fff;
+      --accent: #0d6efd;
+      --muted: #333;
+      --text: #111;
     }
 
     html, body {
@@ -34,6 +44,7 @@
       font-family: Inter, "Helvetica Neue", Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      transition: background 0.32s ease, color 0.32s ease;
     }
 
     /* wrapper to center content */
@@ -59,7 +70,7 @@
     h1 {
       margin: 0;
       font-size: 18px;
-      color: #fff;
+      color: var(--text);
     }
 
     /* book area (centered) */
@@ -69,6 +80,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
+      gap: 8px;
     }
 
     /* the #book element is controlled by JS/turn.js */
@@ -79,6 +92,7 @@
       overflow: hidden;
       position: relative;
       -webkit-tap-highlight-color: transparent;
+      transition: width 0.24s ease, height 0.24s ease;
     }
 
     /* pages created inside #book should fill container and center image */
@@ -163,7 +177,7 @@
       color: white;
     }
 
-    .info { color: #cfcfcf; font-size: 13px; }
+    .info { color: var(--muted); font-size: 13px; }
 
     /* Loader overlay while first pages preload */
     .loader {
@@ -194,6 +208,31 @@
       background: linear-gradient(90deg,var(--accent),#00c6ff);
     }
 
+    /* Juz nav buttons */
+    #juzNav button {
+      background: #fff;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #juzNav button:hover { background: var(--accent); color: #fff; }
+
+    /* progress bar */
+    #progressContainer {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    #progressBarWrap{ width: 100%; background: rgba(255,255,255,0.06); border-radius: 8px; height: 12px; overflow:hidden; }
+    #progressBar{ width:0%; height:100%; background: linear-gradient(90deg,var(--accent),#00c6ff); transition: width .25s ease; }
+    #progressText{ color: var(--muted); font-size:13px }
+
     /* responsive */
     @media (max-width: 760px) {
       .loader .bar { width: 280px; }
@@ -202,7 +241,7 @@
     }
   </style>
 </head>
-<body>
+<body data-theme="dark">
   <!-- Loader -->
   <div id="loader" class="loader" style="display:flex">
     <div id="loaderText">Memuat halaman...</div>
@@ -217,6 +256,7 @@
       <h1>AlQur'an</h1>
       <div style="display:flex;gap:10px;align-items:center">
         <button id="fullscreenToggle" class="btn secondary">Toggle Fullscreen</button>
+        <button id="themeToggle" class="btn secondary">🌙 Theme</button>
         <div id="pageInfo" class="info">Halaman 1 / 1000</div>
       </div>
     </header>
@@ -224,6 +264,12 @@
     <div class="book-area">
       <!-- This element will be controlled by turn.js -->
       <div id="book"></div>
+
+      <!-- Progress (percentage) -->
+      <div id="progressContainer">
+        <div id="progressBarWrap"><div id="progressBar"></div></div>
+        <div id="progressText">Progress membaca: 0%</div>
+      </div>
     </div>
 
     <div class="controls">
@@ -238,6 +284,15 @@
     </div>
 
     <div id="pagination" class="pagination" aria-label="Pagination"></div>
+
+    <!-- Juz navigation (buttons populated by JS) -->
+    <div id="juzNav" class="pagination" style="margin-top:12px;"></div>
+
+    <!-- Bookmark Controls -->
+    <div class="controls" style="margin-top:10px;">
+      <button id="saveBookmark" class="btn">💾 Simpan Halaman Terakhir</button>
+      <button id="goBookmark" class="btn secondary">🔖 Buka Halaman Tersimpan</button>
+    </div>
   </div>
 
   <!-- audio -->
@@ -350,18 +405,20 @@
        - displayMode: "single" for portrait, "double" for landscape
        ========================= */
     function computeLayout() {
-      const vw = Math.min(window.innerWidth * 0.95, MAX_BOOK_WIDTH);
+      // Improved layout to take advantage of wide desktop screens while preserving original logic
+      const vw = Math.min(window.innerWidth * 0.98, Math.max(window.innerWidth, MAX_BOOK_WIDTH * 4));
       const vh = Math.round(window.innerHeight * 0.83);
 
       const isLandscape = window.innerWidth > window.innerHeight;
+      const isDesktop = window.innerWidth >= 900; // threshold for double-page on larger screens
       let pageWidth;
 
-      if(isLandscape) {
-        // allow two pages across with small margins
-        const candidate = Math.min((window.innerWidth * 0.88) / 2, MAX_BOOK_WIDTH / 2);
+      if(isDesktop) {
+        // allow two pages across with generous width up to viewport
+        const candidate = Math.min((window.innerWidth * 0.92) / 2, Math.max(MAX_BOOK_WIDTH, window.innerWidth / 2));
         pageWidth = Math.max(200, Math.round(candidate));
       } else {
-        // single page fits available width
+        // single page fits available width on mobile
         pageWidth = Math.max(200, Math.round(Math.min(vw, window.innerWidth * 0.95)));
       }
 
@@ -376,7 +433,7 @@
       return {
         pageWidth,
         pageHeight,
-        displayMode: isLandscape ? "double" : "single"
+        displayMode: isDesktop ? "double" : "single"
       };
     }
 
@@ -483,6 +540,7 @@
       $pageInfo.text(`Halaman ${currentPage} / ${TOTAL_PAGES}`);
       $("#gotoInput").val(currentPage);
       highlightPagination();
+      updateProgress();
     }
 
     /* =========================
@@ -651,6 +709,87 @@
     }
 
     /* =========================
+       Progress, Juz, Bookmark — additions without removing original logic
+       ========================= */
+
+    // Build juz navigation based on TOTAL_PAGES distribution (even split) — user can adjust mapping if needed
+    function computeJuzStarts(){
+      const arr = [];
+      const per = TOTAL_PAGES / 30;
+      for(let i=0;i<30;i++){
+        const page = Math.max(1, Math.round(i * per) + 1); // 1-based
+        arr.push(page);
+      }
+      return arr;
+    }
+
+    const juzStarts = computeJuzStarts();
+
+    function buildJuzNav(){
+      const $nav = $("#juzNav");
+      $nav.empty();
+      for(let i=1;i<=30;i++){
+        const btn = $("<button>").text(`Juz ${i}`).on("click", ()=>goTo(juzStarts[i-1]));
+        $nav.append(btn);
+      }
+    }
+
+    // Bookmark controls
+    function saveBookmark(){
+      localStorage.setItem("lastPageQuran", currentPage);
+      // also save timestamp
+      localStorage.setItem("lastPageQuranTime", new Date().toISOString());
+      try{ alert(`✅ Halaman ${currentPage} disimpan sebagai penanda bacaan terakhir.`); }catch(e){}
+    }
+
+    function goToBookmark(){
+      const saved = localStorage.getItem("lastPageQuran");
+      if(saved){ goTo(parseInt(saved,10)); try{ alert(`📖 Membuka halaman ${saved} dari penanda.`); }catch(e){} }
+      else { try{ alert("Belum ada penanda tersimpan."); }catch(e){} }
+    }
+
+    // Update progress bar + text
+    function updateProgress(){
+      const pct = Math.round((currentPage / TOTAL_PAGES) * 100);
+      $("#progressBar").css("width", pct + "%");
+      $("#progressText").text(`Progress membaca: ${pct}%`);
+    }
+
+    function addJuzAndBookmarkUI(){
+      buildJuzNav();
+      $("#saveBookmark").on("click", saveBookmark);
+      $("#goBookmark").on("click", goToBookmark);
+
+      // If there is a saved page — offer to jump there on open
+      const saved = localStorage.getItem("lastPageQuran");
+      if(saved){
+        // do not force; wait until app visible and turn initialized
+        setTimeout(()=>{
+          if(confirm(`Lanjutkan dari halaman ${saved}?`)){
+            goTo(parseInt(saved,10));
+          }
+        }, 800);
+      }
+
+      // theme toggle
+      const $themeBtn = $("#themeToggle");
+      function loadTheme(){
+        const t = localStorage.getItem('quranTheme') || 'dark';
+        $('body').attr('data-theme', t);
+        $themeBtn.text(t === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode');
+      }
+      function toggleTheme(){
+        const cur = $('body').attr('data-theme') === 'dark' ? 'dark' : 'light';
+        const next = cur === 'dark' ? 'light' : 'dark';
+        $('body').attr('data-theme', next);
+        localStorage.setItem('quranTheme', next);
+        $themeBtn.text(next === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode');
+      }
+      $themeBtn.on('click', toggleTheme);
+      loadTheme();
+    }
+
+    /* =========================
        Start sequence: preload -> build pages -> init turn -> UI
        ========================= */
     function start() {
@@ -666,6 +805,7 @@
         createPagination(1);
         updateAfterTurn();
         attachUI();
+        addJuzAndBookmarkUI();
         lastDisplayMode = detectDisplay();
       }, 300);
 
