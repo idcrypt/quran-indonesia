@@ -7,9 +7,9 @@
 
   <!--
     Catatan: file ini sengaja verbose (banyak komentar & struktur) agar mudah dibaca.
-    Total halaman diatur oleh TOTAL_PAGES (default 1100).
+    Total halaman diatur oleh TOTAL_PAGES (default 283).
     Pastikan:
-      - images/page1.png ... images/page1000.png tersedia
+      - images/page1.png ... images/page283.png tersedia
       - sounds/flip.mp3 tersedia
       - js/jquery.min.js dan js/turn.min.js tersedia
   -->
@@ -232,7 +232,7 @@
 
       <div class="goto">
         <label style="color:var(--muted)">Ke halaman</label>
-        <input id="gotoInput" type="number" min="1" max="1000" value="1">
+        <input id="gotoInput" type="number" min="1" max="283" value="1">
         <button id="gotoBtn" class="btn">Go</button>
       </div>
     </div>
@@ -254,11 +254,11 @@
     /* =========================
        CONFIG & STATE
        ========================= */
-    const TOTAL_PAGES = 999;     // sesuaikan kalau berubah
+    const TOTAL_PAGES = 283;     // sesuaikan kalau berubah
     const PER_BLOCK = 10;        // pagination per block
     const A4_ASPECT = 1.41421356; // tinggi/lebar ≈ 297/210
-    const MAX_BOOK_WIDTH = 999; // maksimal lebar book (adjustable)
-    const PRELOAD_COUNT = 999;    // halaman pertama yang dipreload sebelum sembunyikan loader
+    const MAX_BOOK_WIDTH = 283; // maksimal lebar book (adjustable)
+    const PRELOAD_COUNT = 283;    // halaman pertama yang dipreload sebelum sembunyikan loader
 
     let currentPage = 1;         // halaman aktif (1-based)
     let currentBlock = 1;
