@@ -7,9 +7,9 @@
 
   <!--
     Catatan: file ini sengaja verbose (banyak komentar & struktur) agar mudah dibaca.
-    Total halaman diatur oleh TOTAL_PAGES (default 283).
+    Total halaman diatur oleh TOTAL_PAGES (default 950).
     Pastikan:
-      - images/page1.png ... images/page283.png tersedia
+      - images/page1.png ... images/page950.png tersedia
       - sounds/flip.mp3 tersedia
       - js/jquery.min.js dan js/turn.min.js tersedia
   -->
@@ -257,7 +257,7 @@
       <div style="display:flex;gap:10px;align-items:center">
         <button id="fullscreenToggle" class="btn secondary">Toggle Fullscreen</button>
         <button id="themeToggle" class="btn secondary">🌙 Theme</button>
-        <div id="pageInfo" class="info">Halaman 1 / 1000</div>
+        <div id="pageInfo" class="info">Halaman 1 / 950</div>
       </div>
     </header>
 
@@ -278,7 +278,7 @@
 
       <div class="goto">
         <label style="color:var(--muted)">Ke halaman</label>
-        <input id="gotoInput" type="number" min="1" max="283" value="1">
+        <input id="gotoInput" type="number" min="1" max="950" value="1">
         <button id="gotoBtn" class="btn">Go</button>
       </div>
     </div>
@@ -309,11 +309,11 @@
     /* =========================
        CONFIG & STATE
        ========================= */
-    const TOTAL_PAGES = 283;     // sesuaikan kalau berubah
+    const TOTAL_PAGES = 950;     // sesuaikan kalau berubah
     const PER_BLOCK = 10;        // pagination per block
     const A4_ASPECT = 1.41421356; // tinggi/lebar ≈ 297/210
-    const MAX_BOOK_WIDTH = 283; // maksimal lebar book (adjustable)
-    const PRELOAD_COUNT = 283;    // halaman pertama yang dipreload sebelum sembunyikan loader
+    const MAX_BOOK_WIDTH = 950; // maksimal lebar book (adjustable)
+    const PRELOAD_COUNT = 950;    // halaman pertama yang dipreload sebelum sembunyikan loader
 
     let currentPage = 1;         // halaman aktif (1-based)
     let currentBlock = 1;
