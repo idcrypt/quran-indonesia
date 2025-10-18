@@ -723,7 +723,41 @@
       return arr;
     }
 
-    const juzStarts = computeJuzStarts();
+    // Manual juz start mapping — sesuai mushaf Madinah (604 halaman)
+// Sesuaikan nomor halamannya dengan versi PDF / image kamu
+const juzStarts = [
+  9,   // Juz 1
+  35,  // Juz 2
+  62,  // Juz 3
+  88,  // Juz 4
+  117,  // Juz 5
+  144, // Juz 6
+  170, // Juz 7
+  200, // Juz 8
+  227, // Juz 9
+  257, // Juz 10
+  202, // Juz 11
+  222, // Juz 12
+  242, // Juz 13
+  262, // Juz 14
+  282, // Juz 15
+  302, // Juz 16
+  322, // Juz 17
+  342, // Juz 18
+  362, // Juz 19
+  382, // Juz 20
+  402, // Juz 21
+  422, // Juz 22
+  442, // Juz 23
+  462, // Juz 24
+  482, // Juz 25
+  502, // Juz 26
+  522, // Juz 27
+  542, // Juz 28
+  562, // Juz 29
+  582  // Juz 30
+];
+
 
     function buildJuzNav(){
       const $nav = $("#juzNav");
